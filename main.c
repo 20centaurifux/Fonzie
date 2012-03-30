@@ -58,7 +58,7 @@ main(int argc, char *argv[])
 		}
 		else
 		{
-			fprintf(stderr, "Couldn't load file, format seems to be invalid.");
+			fprintf(stderr, "Couldn't load file, format seems to be invalid.\n");
 		}
 
 		/* close file */
@@ -66,7 +66,7 @@ main(int argc, char *argv[])
 	}
 	else
 	{
-		fprintf(stderr, "Couldn't open file (err=%d).", errno);
+		fprintf(stderr, "Couldn't open file (err=%d).\n", errno);
 	}
 
 	return 0;

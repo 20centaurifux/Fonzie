@@ -18,7 +18,7 @@
 #include <assert.h>
 #include "vm.h"
 
-byte FONZIE_FORMAT_MAGIC[] = { 70, 79, 78, 90 };
+byte DELVECCHIO_FORMAT_MAGIC[] = { 100, 101, 108, 50 };
 
 /*
  *	x86 macros:
@@ -491,17 +491,31 @@ vm_load_delvecchio(vm_t *vm, FILE *fz)
 {
 	byte __attribute__((aligned(32))) buffer[512];
 	int size;
+	int32_t length;
 
 	assert(fz != NULL);
 
 	/* read & validate format magic */
-	if(!((size = fread(buffer, 1, 4, fz)) == 4) && memcmp(buffer, FONZIE_FORMAT_MAGIC, 4))
+	if(((size = fread(buffer, 1, 4, fz)) != 4) || memcmp(buffer, DELVECCHIO_FORMAT_MAGIC, 4))
+	{
+		return false;
+	}
+
+	/* read data segment size */
+	if((size = fread(&length, 1, 4, fz)) == 4)
+	{
+		#ifdef LITTLE_ENDIAN
+		_swap_bytes32(&length);
+		#endif
+	}
+
+	if(length > DATA_SEGMENT_SIZE)
 	{
 		return false;
 	}
 
 	/* read & write data segment */
-	if((size = fread(buffer, 1, DATA_SEGMENT_SIZE, fz)) != DATA_SEGMENT_SIZE)
+	if((size = fread(buffer, 1, length, fz)) != length)
 	{
 		return false;
 	}
@@ -509,7 +523,7 @@ vm_load_delvecchio(vm_t *vm, FILE *fz)
 	vm_write_data(vm, buffer, size);
 
 	/* read & write code segment */
-	if(fread(buffer, 1, CODE_SEGMENT_SIZE, fz) < 0)
+	if((size = fread(buffer, 1, CODE_SEGMENT_SIZE, fz)) < 0 || size > CODE_SEGMENT_SIZE)
 	{
 		return false;
 	}

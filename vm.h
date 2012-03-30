@@ -29,7 +29,7 @@
 typedef uint8_t byte;
 typedef uint32_t dword;
 
-extern byte FONZIE_FORMAT_MAGIC[];
+extern byte DELVECCHIO_FORMAT_MAGIC[];
 
 typedef enum
 {
