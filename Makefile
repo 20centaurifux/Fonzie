@@ -1,4 +1,4 @@
-CFLAGS=-DARCH_X86 -DLITTLE_ENDIAN -Os -pedantic -Wall
+CFLAGS=-DARCH_X86 -DLITTLE_ENDIAN -pedantic -Wall
 
 all:
 	gcc -c main.c -o main.o $(CFLAGS)
