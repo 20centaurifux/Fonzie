@@ -75,16 +75,17 @@ typedef enum
 	OP_CODE_MOD_REG_REG         = 26,
 	OP_CODE_MOD_REG_ADDR        = 27,
 	OP_CODE_MOD_REG_DWORD       = 28,
-	OP_CODE_RET                 = 29,
-	OP_CODE_CMP_REG_ADDR        = 30,
-	OP_CODE_CMP_REG_REG         = 31,
-	OP_CODE_JE                  = 32,
-	OP_CODE_JNE                 = 33,
-	OP_CODE_JGE                 = 34,
-	OP_CODE_JG                  = 35,
-	OP_CODE_JLE                 = 36,
-	OP_CODE_JL                  = 37,
-	OP_CODE_CALL                = 38
+	OP_CODE_RND                 = 29,
+	OP_CODE_RET                 = 30,
+	OP_CODE_CMP_REG_ADDR        = 31,
+	OP_CODE_CMP_REG_REG         = 32,
+	OP_CODE_JE                  = 33,
+	OP_CODE_JNE                 = 34,
+	OP_CODE_JGE                 = 35,
+	OP_CODE_JG                  = 36,
+	OP_CODE_JLE                 = 37,
+	OP_CODE_JL                  = 38,
+	OP_CODE_CALL                = 39
 } VM_OPCODE;
 
 typedef enum

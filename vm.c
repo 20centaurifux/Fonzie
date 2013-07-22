@@ -16,6 +16,7 @@
  ***************************************************************************/
 #include <string.h>
 #include <assert.h>
+#include <time.h>
 #include "vm.h"
 
 byte DELVECCHIO_FORMAT_MAGIC[] = { 100, 101, 108, 50 };
@@ -430,13 +431,24 @@ _vm_or(vm_t *vm, dword *dw0, dword dw1)
 	return true;
 }
 
+/* random numbers */
+#define _vm_rnd(vm) _vm_write_register(vm, VM_REGISTER_R, rand())
+
 /*
  *	public:
  */
 void vm_reset(vm_t *vm)
 {
+	static bool rnd = false;
+
 	memset(vm, 0, sizeof(vm_t));
 	_vm_write_register(vm, VM_REGISTER_IP, DATA_SEGMENT_SIZE);
+
+	if(!rnd)
+	{
+		srand(time(NULL));
+		rnd = true;
+	}
 }
 
 void
@@ -804,6 +816,12 @@ vm_step(vm_t *vm)
 					ret = VM_STATE_OK;
 				}
 			}
+			break;
+
+		case OP_CODE_RND:
+			_vm_rnd(vm);
+			ip++;
+			ret = VM_STATE_OK;
 			break;
 
 		case OP_CODE_RET:
