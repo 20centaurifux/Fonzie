@@ -393,6 +393,43 @@ _vm_div(vm_t *vm, dword *dw0, dword dw1)
 	return true;
 }
 
+/* MOD command, update exception register on failure */
+static bool
+_vm_mod(vm_t *vm, dword *dw0, dword dw1)
+{
+	dword fl;
+
+	if(dw1 == 0)
+	{
+		fl = _vm_read_register(vm, VM_REGISTER_FL);
+		fl |= VM_EX_DIV_ZERO;
+		_vm_write_register(vm, VM_REGISTER_FL, fl);
+
+		return false;
+	}
+
+	*dw0 = *dw0 % dw1;
+
+	return true;
+}
+
+/* AND, OR commands */
+static inline bool
+_vm_and(vm_t *vm, dword *dw0, dword dw1)
+{
+	*dw0 = *dw0 & dw1;
+
+	return true;
+}
+
+static inline bool
+_vm_or(vm_t *vm, dword *dw0, dword dw1)
+{
+	*dw0 = *dw0 | dw1;
+
+	return true;
+}
+
 /*
  *	public:
  */
@@ -595,6 +632,14 @@ vm_step(vm_t *vm)
 			}
 			break;
 
+		case OP_CODE_MOV_REG_ADDR_IN_REG:
+			if(_vm_read_reg_reg(vm, &ip, &reg0, &reg1))
+			{
+				*(dword *)(vm->registers + (reg0 - 1) * 4) = *(dword *)(vm->memory + vm_read_register(*vm, reg1));
+				ret = VM_STATE_OK;
+			}
+			break;
+
 		case OP_CODE_INC:
 		case OP_CODE_DEC:
 			if(_vm_read_reg(vm, &ip, &reg0))
@@ -613,6 +658,9 @@ vm_step(vm_t *vm)
 		case OP_CODE_ADD_REG_REG:
 		case OP_CODE_MUL_REG_REG:
 		case OP_CODE_DIV_REG_REG:
+		case OP_CODE_AND_REG_REG:
+		case OP_CODE_OR_REG_REG:
+		case OP_CODE_MOD_REG_REG:
 			if(_vm_read_reg_reg(vm, &ip, &reg0, &reg1))
 			{
 				dw0 = _vm_read_register(vm, reg0);
@@ -635,6 +683,18 @@ vm_step(vm_t *vm)
 					case OP_CODE_DIV_REG_REG:
 						result = _vm_div(vm, &dw0, dw1);
 						break;
+
+					case OP_CODE_AND_REG_REG:
+						result = _vm_and(vm, &dw0, dw1);
+						break;
+
+					case OP_CODE_OR_REG_REG:
+						result = _vm_or(vm, &dw0, dw1);
+						break;
+
+					case OP_CODE_MOD_REG_REG:
+						result = _vm_mod(vm, &dw0, dw1);
+						break;
 				}
 
 				if(result)
@@ -649,6 +709,9 @@ vm_step(vm_t *vm)
 		case OP_CODE_ADD_REG_ADDR:
 		case OP_CODE_MUL_REG_ADDR:
 		case OP_CODE_DIV_REG_ADDR:
+		case OP_CODE_AND_REG_ADDR:
+		case OP_CODE_OR_REG_ADDR:
+		case OP_CODE_MOD_REG_ADDR:
 			if(_vm_read_reg_address(vm, &ip, &reg0, &addr))
 			{
 				dw0 = _vm_read_register(vm, reg0);
@@ -671,6 +734,18 @@ vm_step(vm_t *vm)
 					case OP_CODE_DIV_REG_ADDR:
 						result = _vm_div(vm, &dw0, dw1);
 						break;
+
+					case OP_CODE_AND_REG_ADDR:
+						result = _vm_and(vm, &dw0, dw1);
+						break;
+
+					case OP_CODE_OR_REG_ADDR:
+						result = _vm_or(vm, &dw0, dw1);
+						break;
+
+					case OP_CODE_MOD_REG_ADDR:
+						result = _vm_mod(vm, &dw0, dw1);
+						break;
 				}
 
 				if(result)
@@ -685,6 +760,9 @@ vm_step(vm_t *vm)
 		case OP_CODE_ADD_REG_DWORD:
 		case OP_CODE_MUL_REG_DWORD:
 		case OP_CODE_DIV_REG_DWORD:
+		case OP_CODE_AND_REG_DWORD:
+		case OP_CODE_OR_REG_DWORD:
+		case OP_CODE_MOD_REG_DWORD:
 			if(_vm_read_reg_dword(vm, &ip, &reg0, &dw1))
 			{
 				dw0 = _vm_read_register(vm, reg0);
@@ -705,6 +783,18 @@ vm_step(vm_t *vm)
 
 					case OP_CODE_DIV_REG_DWORD:
 						result = _vm_div(vm, &dw0, dw1);
+						break;
+
+					case OP_CODE_AND_REG_DWORD:
+						result = _vm_and(vm, &dw0, dw1);
+						break;
+
+					case OP_CODE_OR_REG_DWORD:
+						result = _vm_or(vm, &dw0, dw1);
+						break;
+
+					case OP_CODE_MOD_REG_DWORD:
+						result = _vm_mod(vm, &dw0, dw1);
 						break;
 				}
 
