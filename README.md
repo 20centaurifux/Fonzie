@@ -6,10 +6,11 @@
 a virtual environment, for example.
 
 ***Fonzie*** has 8 registers, a stack and two segments: one for data and
-another one for code. The stack is used only internally.
+another one for code.
 
 The default stack size is 256 *bytes*. The data segment can have 256 *bytes*
-and the code segment 2048 *bytes*.
+and the code segment 2048 *bytes*. These values can easily changed before
+compililng ***Fonzie***.
 
 
 ## Registers
@@ -75,6 +76,8 @@ The following list contains all available *opcodes*:
 * ***37*** (*JLE*): jump if second value is less than or equal to first one
 * ***38*** (*JL*): jump if second value is less than first one
 * ***39*** (*CALL*): call subroutine
+* ***40*** (*PUSH*): push *DWORD* stored in register to stack
+* ***41*** (*POP*): pop *DWORD* from stack to register
 
 
 The exceptions below may occur during operation:
