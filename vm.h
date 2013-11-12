@@ -85,7 +85,9 @@ typedef enum
 	OP_CODE_JG                  = 36,
 	OP_CODE_JLE                 = 37,
 	OP_CODE_JL                  = 38,
-	OP_CODE_CALL                = 39
+	OP_CODE_CALL                = 39,
+	OP_CODE_PUSH                = 40,
+	OP_CODE_POP                 = 41
 } VM_OPCODE;
 
 typedef enum

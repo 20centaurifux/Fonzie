@@ -895,6 +895,29 @@ vm_step(vm_t *vm)
 			}
 			break;
 
+		case OP_CODE_PUSH:
+			if(_vm_read_reg(vm, &ip, &reg0))
+			{
+				dw0 = _vm_read_register(vm, reg0);
+
+				if(_vm_push_dword_to_stack(vm, dw0))
+				{
+					ret = VM_STATE_OK;
+				}
+			}
+			break;
+
+		case OP_CODE_POP:
+			if(_vm_read_reg(vm, &ip, &reg0))
+			{
+				if(_vm_pop_dword_from_stack(vm, &dw0))
+				{
+					_vm_write_register(vm, reg0, dw0);
+					ret = VM_STATE_OK;
+				}
+			}
+			break;
+
 		default:
 			dw0 = _vm_read_register(vm, VM_REGISTER_EX);
 			dw0 |= VM_EX_INVALID_OP_CODE;
