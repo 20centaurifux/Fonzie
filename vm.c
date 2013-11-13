@@ -258,7 +258,62 @@ _vm_pop_dword_from_stack(vm_t *vm, dword *dw)
 	}
 
 	return false;
-	
+}
+
+/* test stack address */
+static bool
+_vm_test_stack_address(vm_t *vm, dword sp, dword offset)
+{
+	dword fl;
+
+	if(offset < 0 || (offset && sp < offset))
+	{
+		fl = _vm_read_register(vm, VM_REGISTER_FL);
+		fl |= VM_EX_INVALID_STACK_ADDRESS;
+		_vm_write_register(vm, VM_REGISTER_FL, fl);
+
+		return false;
+	}
+
+	return true;
+}
+
+/* copy value from stack address */
+static bool
+_vm_read_from_stack(vm_t *vm, byte reg, dword offset)
+{
+	dword sp;
+
+	sp = vm_read_register(*vm, VM_REGISTER_SP);
+
+	if(_vm_test_stack_address(vm, sp, offset))
+	{
+		/* copy dword from stack to register: */
+		*(dword *)(vm->registers + (reg - 1) * 4) = *(dword *)(vm->stack + sp - offset);
+
+		return true;
+	}
+
+	return false;
+}
+
+/* write value to stack address */
+static bool
+_vm_write_to_stack(vm_t *vm, dword offset, byte reg)
+{
+	dword sp;
+
+	sp = vm_read_register(*vm, VM_REGISTER_SP);
+
+	if(_vm_test_stack_address(vm, sp, offset))
+	{
+		/* copy dword from register to stack: */
+		 *(dword *)(vm->stack + sp - offset) = *(dword *)(vm->registers + (reg - 1) * 4);
+
+		return true;
+	}
+
+	return false;
 }
 
 /* read new address from code segment, write next address to stack & set instruction pointer to new address */
@@ -913,6 +968,26 @@ vm_step(vm_t *vm)
 				if(_vm_pop_dword_from_stack(vm, &dw0))
 				{
 					_vm_write_register(vm, reg0, dw0);
+					ret = VM_STATE_OK;
+				}
+			}
+			break;
+
+		case OP_CODE_MOVS_REG_STACK:
+			if(_vm_read_reg_dword(vm, &ip, &reg0, &dw0))
+			{
+				if(_vm_read_from_stack(vm, reg0, dw0))
+				{
+					ret = VM_STATE_OK;
+				}
+			}
+			break;
+
+		case OP_CODE_MOVS_STACK_REG:
+			if(_vm_read_address_reg(vm, &ip, &addr, &reg0))
+			{
+				if(_vm_write_to_stack(vm, addr, reg0))
+				{
 					ret = VM_STATE_OK;
 				}
 			}

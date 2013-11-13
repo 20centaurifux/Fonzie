@@ -87,7 +87,9 @@ typedef enum
 	OP_CODE_JL                  = 38,
 	OP_CODE_CALL                = 39,
 	OP_CODE_PUSH                = 40,
-	OP_CODE_POP                 = 41
+	OP_CODE_POP                 = 41,
+	OP_CODE_MOVS_REG_STACK      = 42,
+	OP_CODE_MOVS_STACK_REG      = 43
 } VM_OPCODE;
 
 typedef enum
@@ -98,12 +100,13 @@ typedef enum
 
 typedef enum
 {
-	VM_EX_INVALID_ADDRESS  = 1,
-	VM_EX_INVALID_REGISTER = 2,
-	VM_EX_STACK_OVERFLOW   = 4,
-	VM_EX_CARRY_OVER       = 8,
-	VM_EX_DIV_ZERO         = 16,
-	VM_EX_INVALID_OP_CODE  = 32
+	VM_EX_INVALID_ADDRESS       = 1,
+	VM_EX_INVALID_REGISTER      = 2,
+	VM_EX_STACK_OVERFLOW        = 4,
+	VM_EX_CARRY_OVER            = 8,
+	VM_EX_DIV_ZERO              = 16,
+	VM_EX_INVALID_OP_CODE       = 32,
+	VM_EX_INVALID_STACK_ADDRESS = 64
 } VM_EX;
 
 typedef enum
