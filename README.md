@@ -9,8 +9,11 @@ a virtual environment, for example.
 another one for code.
 
 The default stack size is 256 *bytes*. The data segment can have 256 *bytes*
-and the code segment 2048 *bytes*. These values can easily changed before
+and the code segment 2048 *bytes*. These values can easily be changed before
 compililng ***Fonzie***.
+
+Calling a *subroutine* ***Fonzie*** pushs the return address onto the stack.
+Please keep this in mind before returning from a *subroutine*.
 
 
 ## Registers
@@ -78,6 +81,8 @@ The following list contains all available *opcodes*:
 * ***39*** (*CALL*): call subroutine
 * ***40*** (*PUSH*): push *DWORD* stored in register to stack
 * ***41*** (*POP*): pop *DWORD* from stack to register
+* ***42*** (*MOVS_REG_STACK*): copy *DWORD* from register to stack address
+* ***43*** (*MOVS_STACK_REG*): copy *DWORD* from stack address to register
 
 
 The exceptions below may occur during operation:
