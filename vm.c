@@ -17,6 +17,7 @@
 #include <string.h>
 #include <assert.h>
 #include <time.h>
+#include <limits.h>
 #include "vm.h"
 
 byte DELVECCHIO_FORMAT_MAGIC[] = { 100, 101, 108, 50 };
@@ -496,9 +497,16 @@ void vm_reset(vm_t *vm)
 {
 	static bool rnd = false;
 
+	/* assert size of data & code segment */
+	assert(DATA_SEGMENT_SIZE > 0);
+	assert(CODE_SEGMENT_SIZE > 0);
+	assert(DATA_SEGMENT_SIZE < (UINT32_MAX - CODE_SEGMENT_SIZE));
+
+	/* clear registers & memory */
 	memset(vm, 0, sizeof(vm_t));
 	_vm_write_register(vm, VM_REGISTER_IP, DATA_SEGMENT_SIZE);
 
+	/* initialize random number generator */
 	if(!rnd)
 	{
 		srand(time(NULL));
