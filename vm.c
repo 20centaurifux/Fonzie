@@ -577,7 +577,7 @@ vm_print_registers(vm_t vm, FILE *stream)
 void
 vm_write_register(vm_t *vm, VM_REGISTER reg, dword value)
 {
-	assert(reg >= VM_REGISTER_A0 && reg >= VM_REGISTER_EX);
+	assert(reg >= VM_REGISTER_A0 && reg <= VM_REGISTER_EX);
 
 	_vm_write_register(vm, reg, value);
 }
