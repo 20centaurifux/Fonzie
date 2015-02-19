@@ -56,7 +56,7 @@ byte DELVECCHIO_FORMAT_MAGIC[] = { 100, 101, 108, 50 };
 
 /* read dword from memory & convert little to big endian if necessary */
 static inline dword
-_vm_read_dword(void *src)
+_vm_read_dword(const void *src)
 {
 	dword ret;
 
@@ -215,7 +215,7 @@ _vm_push_dword_to_stack(vm_t *vm, dword dw)
 	dword sp;
 	dword fl;
 
-	sp = vm_read_register(*vm, VM_REGISTER_SP);
+	sp = vm_read_register((const vm_t*)vm, VM_REGISTER_SP);
 
 	if(sp == STACK_SIZE)
 	{
@@ -242,7 +242,7 @@ _vm_pop_dword_from_stack(vm_t *vm, dword *dw)
 {
 	dword sp;
 
-	sp = vm_read_register(*vm, VM_REGISTER_SP);
+	sp = vm_read_register((const vm_t *)vm, VM_REGISTER_SP);
 
 	if(sp >= 4)
 	{
@@ -285,7 +285,7 @@ _vm_read_from_stack(vm_t *vm, byte reg, dword offset)
 {
 	dword sp;
 
-	sp = vm_read_register(*vm, VM_REGISTER_SP);
+	sp = vm_read_register((const vm_t *)vm, VM_REGISTER_SP);
 
 	if(_vm_test_stack_address(vm, sp, offset))
 	{
@@ -304,7 +304,7 @@ _vm_write_to_stack(vm_t *vm, dword offset, byte reg)
 {
 	dword sp;
 
-	sp = vm_read_register(*vm, VM_REGISTER_SP);
+	sp = vm_read_register((const vm_t *)vm, VM_REGISTER_SP);
 
 	if(_vm_test_stack_address(vm, sp, offset))
 	{
@@ -553,13 +553,13 @@ vm_write_code(vm_t *vm, byte code[CODE_SEGMENT_SIZE], size_t size)
 }
 
 dword
-vm_read_register(vm_t vm, VM_REGISTER reg)
+vm_read_register(const vm_t *vm, VM_REGISTER reg)
 {
-	return _vm_read_register(((vm_t *)&vm), reg);
+	return _vm_read_register(vm, reg);
 }
 
 void
-vm_print_registers(vm_t vm, FILE *stream)
+vm_print_registers(const vm_t *vm, FILE *stream)
 {
 	fprintf(stream,
 	        "a0=%u, a1=%u, a2=%u, a3=%u, r=%u, ip=%u, sp=%u, fl=%u, ex=%u\n",
@@ -583,11 +583,11 @@ vm_write_register(vm_t *vm, VM_REGISTER reg, dword value)
 }
 
 dword
-vm_read_dword(vm_t vm, dword address)
+vm_read_dword(const vm_t *vm, dword address)
 {
 	assert(address < DATA_SEGMENT_SIZE - 4);
 
-	return _vm_read_dword(vm.memory + address);
+	return _vm_read_dword(vm->memory + address);
 }
 
 void
@@ -669,7 +669,7 @@ vm_step(vm_t *vm)
 	}
 
 	/* get instruction pointer & op code: */
-	ip = vm_read_register(*vm, VM_REGISTER_IP);
+	ip = vm_read_register((const vm_t *)vm, VM_REGISTER_IP);
 	op = *((byte *)vm->memory + ip);
 
 	/* process op code */
@@ -714,7 +714,7 @@ vm_step(vm_t *vm)
 		case OP_CODE_MOV_REG_ADDR_IN_REG:
 			if(_vm_read_reg_reg(vm, &ip, &reg0, &reg1))
 			{
-				*(dword *)(vm->registers + (reg0 - 1) * 4) = *(dword *)(vm->memory + vm_read_register(*vm, reg1));
+				*(dword *)(vm->registers + (reg0 - 1) * 4) = *(dword *)(vm->memory + vm_read_register((const vm_t *)vm, reg1));
 				ret = VM_STATE_OK;
 			}
 			break;

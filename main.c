@@ -50,7 +50,7 @@ main(int argc, char *argv[])
 			do
 			{
 				state = vm_step(&vm);
-				vm_print_registers(vm, stdout);
+				vm_print_registers(&vm, stdout);
 			}
 			while(state == VM_STATE_OK);
 

@@ -127,10 +127,10 @@ typedef struct
 void vm_reset(vm_t *vm);
 void vm_write_data(vm_t *vm, byte data[DATA_SEGMENT_SIZE], size_t size);
 void vm_write_code(vm_t *vm, byte code[CODE_SEGMENT_SIZE], size_t size);
-void vm_print_registers(vm_t vm, FILE *stream);
-dword vm_read_register(vm_t vm, VM_REGISTER reg);
+void vm_print_registers(const vm_t *vm, FILE *stream);
+dword vm_read_register(const vm_t *vm, VM_REGISTER reg);
 void vm_write_register(vm_t *vm, VM_REGISTER reg, dword value);
-dword vm_read_dword(vm_t vm, dword address);
+dword vm_read_dword(const vm_t *vm, dword address);
 void vm_write_dword(vm_t *vm, dword address, dword value);
 bool vm_load_delvecchio(vm_t *vm, FILE *fz);
 VM_STATE vm_step(vm_t *vm);
