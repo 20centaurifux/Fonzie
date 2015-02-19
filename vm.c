@@ -599,26 +599,30 @@ vm_write_dword(vm_t *vm, dword address, dword value)
 }
 
 bool
-vm_load_delvecchio(vm_t *vm, FILE *fz)
+vm_load_delvecchio(vm_t *vm, FILE *fp)
 {
-	byte __attribute__((aligned(32))) buffer[512];
+	byte buffer[512];
 	int size;
 	int32_t length;
 
-	assert(fz != NULL);
+	assert(fp != NULL);
 
 	/* read & validate format magic */
-	if(((size = fread(buffer, 1, 4, fz)) != 4) || memcmp(buffer, DELVECCHIO_FORMAT_MAGIC, 4))
+	if(((size = fread(buffer, 1, 4, fp)) != 4) || memcmp(buffer, DELVECCHIO_FORMAT_MAGIC, 4))
 	{
 		return false;
 	}
 
 	/* read data segment size */
-	if((size = fread(&length, 1, 4, fz)) == 4)
+	if((size = fread(&length, 1, 4, fp)) == 4)
 	{
 		#ifdef LITTLE_ENDIAN
 		_swap_bytes32(&length);
 		#endif
+	}
+	else
+	{
+		return false;
 	}
 
 	if(length > DATA_SEGMENT_SIZE)
@@ -627,7 +631,7 @@ vm_load_delvecchio(vm_t *vm, FILE *fz)
 	}
 
 	/* read & write data segment */
-	if((size = fread(buffer, 1, length, fz)) != length)
+	if((size = fread(buffer, 1, length, fp)) != length)
 	{
 		return false;
 	}
@@ -635,7 +639,7 @@ vm_load_delvecchio(vm_t *vm, FILE *fz)
 	vm_write_data(vm, buffer, size);
 
 	/* read & write code segment */
-	if((size = fread(buffer, 1, CODE_SEGMENT_SIZE, fz)) < 0 || size > CODE_SEGMENT_SIZE)
+	if((size = fread(buffer, 1, CODE_SEGMENT_SIZE, fp)) <= 0 || size > CODE_SEGMENT_SIZE)
 	{
 		return false;
 	}

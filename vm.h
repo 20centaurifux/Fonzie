@@ -122,7 +122,7 @@ typedef struct
  	byte registers[36];
 	byte memory[DATA_SEGMENT_SIZE + CODE_SEGMENT_SIZE];
 	dword stack[STACK_SIZE / 4];
-} __attribute__((aligned(32))) vm_t;
+} vm_t;
 
 void vm_reset(vm_t *vm);
 void vm_write_data(vm_t *vm, byte data[DATA_SEGMENT_SIZE], size_t size);
